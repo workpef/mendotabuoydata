@@ -10,7 +10,7 @@ let endDate = new Date(new Date('2020-07-21 15:00:00').toUTCString());
 let beginDate = setWindHistDepth(endDate, - Number(depth));
 let userDate = endDate.toLocaleDateString();
 let userTime = endDate.toLocaleTimeString();
-let reloadCount = 0;
+
 
 class WindRec {
     speed;
@@ -140,10 +140,7 @@ function randomNumber(min, max) {
 }
 
 function parseDate(ds) {
-
-
     return new Date(ds.replace('T', ' ').replace('Z', ''));
-
 }
 //#endregion 
 
@@ -151,7 +148,7 @@ reloadData();
 
 
 function reloadData() {
-    let uppderBnd = new Date(endDate.toUTCString());  //
+    let uppderBnd = new Date(endDate.toUTCString());  
     let lowerBnd = setWindHistDepth(uppderBnd, - Number(depth));
     weaUrl = generateURL(urlSite, urlSymbols, lowerBnd, uppderBnd);
     console.log(weaUrl);
@@ -191,8 +188,6 @@ function reloadData() {
 
             showWindHist(depth);
             plot(weatherSourceData);
-            reloadCount += 1;
-
 
         });
 }
@@ -244,15 +239,6 @@ function plot(weatherData) {
         }
     }
 
-
-    // plotCross(windPlots, plotArea, 'speedLocationX', 'speedLocationY', 'red', 7);
-    // // plotLine(windPlots, plotArea, 'speedLocationX', 'gustAvgLocationY', 'black');
-
-
-    // // plotCross(windPlots, plotArea, 'speedLocationX', 'gustLocationY', 'black', 10);
-    // plotLine(windPlots, plotArea, 'speedLocationX', 'speedAvgLocationY', 'blue', 0);
-    // plotLine(windPlots, plotArea, 'speedLocationX', 'calcWindMovingAverageLocaionY', 'green', 0);
-    // plotLine(windPlots, plotArea, 'speedLocationX', 'last10windSpeedLocationY', 'black', 9);
     generateWindDirectionArrows(windPlots, plotArea);
     generateDataTable('dataDisplay', windPlots);
 
