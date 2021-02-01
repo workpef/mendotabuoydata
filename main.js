@@ -4,12 +4,10 @@
 
 
 let depth = '75';
-let incGusts = true;
-let invAvg = true;
+
 let endDate = new Date(new Date('2020-07-21 15:00:00').toUTCString());
 let beginDate = setWindHistDepth(endDate, - Number(depth));
-let userDate = endDate.toLocaleDateString();
-let userTime = endDate.toLocaleTimeString();
+
 
 
 class WindRec {
@@ -30,14 +28,11 @@ class WindRec {
     airTemprature;
     waterTemprature;
     pressure;
-
     calcWindMovingAverageLocaionY;
-
     last10windSpeed;
     last10gustSpeed;
     last10windSpeedLocationY;
     last10gustSpeedLocationY;
-
 };
 
 const PlotContolIds = [
@@ -51,21 +46,20 @@ const PlotContolIds = [
     ['airTempToggle', 'airTempColor', ''],
     ['waterTempToggle', 'waterTempColor', '']
 ];
-const PLOT_CONTROL_WIND_SPEED = 0;
-const PLOT_CONTROL_WIND_SPEED_SSEC_AVG = 1;
-const PLOT_CONTROL_WIND_SPEED_LAST_10_AVG = 2;
-const PLOT_CONTROL_WIND_SPEED_ACCUM_AVG = 3;
-const PLOT_CONTROL_GUST = 4;
-const PLOT_CONTROL_GUST_LAST_10 = 5;
 
-const PLOT_CONTROL_ARRAY_TOGGLE = 0;
-const PLOT_CONTROL_ARRAY_COLOR = 1;
-const PLOT_CONTROL_ARRAY_SHAPE = 2;
-const PLOT_CONTROL_ARRAY_LOCATION = 2;
-const PLOT_CONTROL_ARRAY_Y_AXIS_NAME = 3;
-
-
-
+const PlotControlConstants = {
+    wind_speed: 0,
+    wind_speed_ssec_avg: 1,
+    wind_speed_last_10_avg: 2,
+    wind_speed_accum_avg: 3,
+    gust: 4,
+    gust_last_10: 5,
+    array_toggle: 0,
+    array_color: 1,
+    array_shape: 2,
+    array_location: 2,
+    array_y_axis_name: 3
+};
 
 
 
@@ -80,47 +74,45 @@ const urlSymbols =
     'mendota.buoy.water_temp_2:' +
     'aoss.tower.pressure';
 
-const MENDOTA_BUOY_WIND_SPEED = 0;
-const MENDOTA_BUOY_GUST = 1;
-const MENDOTA_BUOY_RUN_WIND_SPEED = 2;
-const MENDOTA_BUOY_WIND_DIRECTION = 3;
-const MENDOTA_BUOY_AIR_TEMP = 4;
-const MENDOTA_BUOY_WATER_TEMP_2 = 5;
-const AOSS_TOWER_PRESSURE = 6;
-const PLOT_TIME = 7;
-const reduceLastTen = (accumulator, currentValue) => accumulator + currentValue;
+const UrlSymbolsConstants = {
+    mendota_buoy_wind_speed: 0,
+    mendota_buoy_gust: 1,
+    mendota_buoy_run_wind_speed: 2,
+    mendota_buoy_wind_direction: 3,
+    mendota_buoy_air_temp: 4,
+    mendota_buoy_water_temp_2: 5,
+    aoss_tower_pressure: 6,
+    plot_time: 7
+};
+
+
+
+
+
 
 
 
 const MS_TO_KNOTS_CONVERSION = 1.944;
-const WIND_SPEED = 0;
-const WIND_DIR = 1;
 const DEGREE_SYMBOL = '\u00B0';
 const FORMAT_FOR_TIME = 'en-GB';
-
 const WIND_PLOT_MULTIPLIER = 20;
 const WIND_PLOT_OFFSET = 40;
 
 //#region utility functions
 
+const reduceLastTen = (accumulator, currentValue) => accumulator + currentValue;
 
 function initDateFromControl() {
 
-    // 'Sun Jul 19 2020 09:00:00 GMT-0600 (Central Daylight Time)'
-
-    userDate = document.getElementById("histDate").value;
-    userTime = document.getElementById("histTime").value;
-
+    let userDate = document.getElementById("histDate").value;
+    let userTime = document.getElementById("histTime").value;
     endDate = new Date(new Date(userDate + ' ' + userTime).toUTCString());
-
     setWindHistDepth(endDate, - Number(depth));
 }
 
 function setWindHistDepth(date, minutes) {
     return new Date(date.getTime() + (minutes * 60000));
 };
-
-
 
 function generateURL(site, symbols, lowerDate, upperDate) {
 
@@ -148,7 +140,8 @@ reloadData();
 
 
 function reloadData() {
-    let uppderBnd = new Date(endDate.toUTCString());  
+
+    let uppderBnd = new Date(endDate.toUTCString());
     let lowerBnd = setWindHistDepth(uppderBnd, - Number(depth));
     weaUrl = generateURL(urlSite, urlSymbols, lowerBnd, uppderBnd);
     console.log(weaUrl);
@@ -164,15 +157,15 @@ function reloadData() {
 
             for (let i = 0; i < ssecData.length; i++) {
 
-                let windSpeed = Number(Number.parseFloat(ssecData[i][MENDOTA_BUOY_WIND_SPEED] * MS_TO_KNOTS_CONVERSION).toFixed(1));
-                let avgWindSpeed = Number(Number.parseFloat(ssecData[i][MENDOTA_BUOY_RUN_WIND_SPEED] * MS_TO_KNOTS_CONVERSION).toFixed(1));
-                let gustSpeed = Number(Number.parseFloat(ssecData[i][MENDOTA_BUOY_GUST] * MS_TO_KNOTS_CONVERSION).toFixed(1));
+                let windSpeed = Number(Number.parseFloat(ssecData[i][UrlSymbolsConstants.mendota_buoy_wind_speed] * MS_TO_KNOTS_CONVERSION).toFixed(1));
+                let avgWindSpeed = Number(Number.parseFloat(ssecData[i][UrlSymbolsConstants.mendota_buoy_run_wind_speed] * MS_TO_KNOTS_CONVERSION).toFixed(1));
+                let gustSpeed = Number(Number.parseFloat(ssecData[i][UrlSymbolsConstants.mendota_buoy_gust] * MS_TO_KNOTS_CONVERSION).toFixed(1));
                 let plotDate = parseDate(ts[i]);
                 let plotTime = plotDate.toTimeString(FORMAT_FOR_TIME).substring(0, 5)
-                let windDirection = String(ssecData[i][MENDOTA_BUOY_WIND_DIRECTION]).padStart(3, '0');
-                let airTemprature = Number.parseFloat(ssecData[i][MENDOTA_BUOY_AIR_TEMP] * (9 / 5) + 32).toFixed(1);
-                let waterTemprature = Number.parseFloat(ssecData[i][MENDOTA_BUOY_WATER_TEMP_2] * (9 / 5) + 32).toFixed(1);
-                let pressure = Number.parseFloat(ssecData[i][AOSS_TOWER_PRESSURE]).toFixed(1);
+                let windDirection = String(ssecData[i][UrlSymbolsConstants.mendota_buoy_wind_direction]).padStart(3, '0');
+                let airTemprature = Number.parseFloat(ssecData[i][UrlSymbolsConstants.mendota_buoy_air_temp] * (9 / 5) + 32).toFixed(1);
+                let waterTemprature = Number.parseFloat(ssecData[i][UrlSymbolsConstants.mendota_buoy_water_temp_2] * (9 / 5) + 32).toFixed(1);
+                let pressure = Number.parseFloat(ssecData[i][UrlSymbolsConstants.aoss_tower_pressure]).toFixed(1);
 
                 weatherSourceData.push([
                     windSpeed,
@@ -198,11 +191,11 @@ function reloadData() {
 function collectPlotDisplayParameters(controls) {
     let controlParams = [];
 
-    for (let i = PLOT_CONTROL_WIND_SPEED; i <= PLOT_CONTROL_GUST_LAST_10; i++) {
+    for (let i = PlotControlConstants.wind_speed; i <= PlotControlConstants.gust_last_10; i++) {
 
-        let isChecked = document.getElementById(controls[i][PLOT_CONTROL_ARRAY_TOGGLE]).checked;
-        let color = document.getElementById(controls[i][PLOT_CONTROL_ARRAY_COLOR]).value;
-        let selectedIndex = document.getElementById(controls[i][PLOT_CONTROL_ARRAY_SHAPE]).selectedIndex;
+        let isChecked = document.getElementById(controls[i][PlotControlConstants.array_toggle]).checked;
+        let color = document.getElementById(controls[i][PlotControlConstants.array_color]).value;
+        let selectedIndex = document.getElementById(controls[i][PlotControlConstants.array_shape]).selectedIndex;
 
         controlParams.push({ checked: isChecked, color: color, shapeIdx: selectedIndex });
     }
@@ -211,6 +204,7 @@ function collectPlotDisplayParameters(controls) {
 
 
 function plot(weatherData) {
+
     const PLOT_CROSS = 0;
     const PLOT_LINE = 1;
     const PLOT_BOX = 2;
@@ -219,11 +213,12 @@ function plot(weatherData) {
     let windPlots = createWindPlots(weatherData, plotArea);
     generateGrid(plotArea);
     let controls = collectPlotDisplayParameters(PlotContolIds);
-    for (let i = PLOT_CONTROL_WIND_SPEED; i <= PLOT_CONTROL_GUST_LAST_10; i++) {
+
+    for (let i = PlotControlConstants.wind_speed; i <= PlotControlConstants.gust_last_10; i++) {
 
         if (controls[i].checked === true) {
             let shapeIdx = controls[i].shapeIdx;
-            let axisName = PlotContolIds[i][PLOT_CONTROL_ARRAY_Y_AXIS_NAME];
+            let axisName = PlotContolIds[i][PlotControlConstants.array_y_axis_name];
             let color = controls[i].color;
             let startIndex = (axisName.includes('last10') ? 9 : 0)
 
@@ -335,22 +330,22 @@ function createWindPlots(WeatherData, plotArea) {
 
         let wp = Object.create(WindRec);
 
-        wp.speed = WeatherData[i][MENDOTA_BUOY_WIND_SPEED];
+        wp.speed = WeatherData[i][UrlSymbolsConstants.mendota_buoy_wind_speed];
         windAccum += wp.speed;
         wp.calcWindMovingAverage = Number(windAccum / (i + 1)).toFixed(1);
-        wp.movingAverage = WeatherData[i][MENDOTA_BUOY_RUN_WIND_SPEED];
+        wp.movingAverage = WeatherData[i][UrlSymbolsConstants.mendota_buoy_run_wind_speed];
         windLast10.push(wp.speed);
 
-        wp.gust = WeatherData[i][MENDOTA_BUOY_GUST];
+        wp.gust = WeatherData[i][UrlSymbolsConstants.mendota_buoy_gust];
         gustAccum += wp.gust;
         gustLast10.push(wp.gust);
         wp.calcGustMovingAverage = Number(gustAccum / (i + 1)).toFixed(1);
 
-        wp.direction = WeatherData[i][MENDOTA_BUOY_WIND_DIRECTION];
-        wp.airTemprature = WeatherData[i][MENDOTA_BUOY_AIR_TEMP];
-        wp.waterTemprature = WeatherData[i][MENDOTA_BUOY_WATER_TEMP_2];
-        wp.pressure = WeatherData[i][AOSS_TOWER_PRESSURE];
-        wp.time = WeatherData[i][PLOT_TIME];
+        wp.direction = WeatherData[i][UrlSymbolsConstants.mendota_buoy_wind_direction];
+        wp.airTemprature = WeatherData[i][UrlSymbolsConstants.mendota_buoy_air_temp];
+        wp.waterTemprature = WeatherData[i][UrlSymbolsConstants.mendota_buoy_water_temp_2];
+        wp.pressure = WeatherData[i][UrlSymbolsConstants.aoss_tower_pressure];
+        wp.time = WeatherData[i][UrlSymbolsConstants.plot_time];
 
         wp.speedLocationX = (plotArea.plotSpan * i) + plotArea.chartLeft;
         wp.speedLocationY = plotArea.chartBottom - (WIND_PLOT_MULTIPLIER * wp.speed);
@@ -382,7 +377,7 @@ function plotPoint(windPlots, plotArea, posX, posY, fillColor, lineOffset, start
     let ctx = plotArea.context;
     let initialIndex = 0;
     if (!Number.isNaN(startIndex)) { initialIndex = startIndex; };
-    for (let i = 0; i < windPlots.length; i++) {
+    for (let i = initialIndex; i < windPlots.length; i++) {
         let wp = windPlots[i];
         ctx.fillStyle = fillColor;
         ctx.fillRect(wp[posX] - lineOffset, wp[posY] - lineOffset, corner, corner);
@@ -522,3 +517,26 @@ function drawWindDir(windDirection, newOriginXaxis, newOriginYAxis, arrowColor, 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
 
 }
+
+
+// const PLOT_CONTROL_WIND_SPEED = 0;
+// const PLOT_CONTROL_WIND_SPEED_SSEC_AVG = 1;
+// const PLOT_CONTROL_WIND_SPEED_LAST_10_AVG = 2;
+// const PLOT_CONTROL_WIND_SPEED_ACCUM_AVG = 3;
+// const PLOT_CONTROL_GUST = 4;
+// const PLOT_CONTROL_GUST_LAST_10 = 5;
+
+// const PLOT_CONTROL_ARRAY_TOGGLE = 0;
+// const PLOT_CONTROL_ARRAY_COLOR = 1;
+// const PLOT_CONTROL_ARRAY_SHAPE = 2;
+// const PLOT_CONTROL_ARRAY_LOCATION = 2;
+// const PLOT_CONTROL_ARRAY_Y_AXIS_NAME = 3;
+
+// const MENDOTA_BUOY_WIND_SPEED = 0;
+// const MENDOTA_BUOY_GUST = 1;
+// const MENDOTA_BUOY_RUN_WIND_SPEED = 2;
+// const MENDOTA_BUOY_WIND_DIRECTION = 3;
+// const MENDOTA_BUOY_AIR_TEMP = 4;
+// const MENDOTA_BUOY_WATER_TEMP_2 = 5;
+// const AOSS_TOWER_PRESSURE = 6;
+// const PLOT_TIME = 7;
