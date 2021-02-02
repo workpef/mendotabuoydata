@@ -9,6 +9,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="mendotaBuoy.css">
+ 
     <script type="text/javascript" src="main.js"></script>
 </head>
 
@@ -31,23 +32,27 @@
         <div id="controlPane">
             <p class=paneControls>
                 <label class='plotControls' for='histDate'>Set Date</label>
-                <input class='plotControls' onchange="initDateFromControl()" type='date' id='histDate'>
+                <input class='plotControls'  type='date' id='histDate'>   <!--onchange="initDateFromControl()"-->
             </p>
             <p class=paneControls>
                 <label class='plotControls' for='histTime'>Set Time</label>
-                <input class='plotControls' type='time' onchange="initDateFromControl()" id='histTime'>
+                <input class='plotControls' type='time' id='histTime'>  <!--onchange="initDateFromControl()"-->
             </p>
             <p class=paneControls>
+
                 <label class='plotControls' for="windhist">History</label>
-                <input class='plotControls' type="range" min="10" max="100" step="1" value="20" id="windhist"
+                <input class='plotControls' type="range" min="10" max="100" step="1" value="75" id="windhist"
                     oninput="showWindHist(value)">
+
                 <output class='plotControls' for="windhist" id=windhistdisplay></output>
+
+
             </p>
             <p style="text-align: center; font-weight: bolder; color: darkred; margin-top: 3em;">
                 Include these measures
             </p>
             <p></p>
-            <table style="border-collapse: collapse; margin:2px; margin-left:20px; font-size: smaller;">
+            <table id='userSelections' style="border-collapse: collapse; margin:2px; margin-left:20px; font-size: smaller;">
                 <tr>
                     <th>Measure</th>
                     <th>Include</th>
@@ -57,7 +62,7 @@
                 <tr style="height:3em;">
                     <td>Wind</td>
                     <td><input class='plotControlschkBox' type="checkbox" id="windSpeedToggle" checked></td>
-                    <td><input type="color" id=windSpeedColor value="#e66465"></td>
+                    <td><input type="color" id=windSpeedColor value="#000000"></td>
                     <td>
                         <select id="windSpeedShape">
                             <option value="Cross" selected>Cross</option>
@@ -174,9 +179,11 @@
         </table>
     </div>
 </body>
-  <script>
+<script>
     document.getElementById("histDate").value = '2020-07-19';
     document.getElementById("histTime").value = '15:00';
+    showWindHist(75)
+    reloadData();
   </script>
 
 </html>
