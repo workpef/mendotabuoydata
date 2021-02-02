@@ -3,10 +3,9 @@
 
 
 
-let depth = '75';
 
-let endDate = new Date(new Date('2020-07-21 15:00:00').toUTCString());
-let beginDate = setWindHistDepth(endDate, - Number(depth));
+
+
 
 
 
@@ -100,50 +99,59 @@ const WIND_PLOT_OFFSET = 40;
 
 //#region utility functions
 
+/* The function used to "reduce" array elements.
+   See createWindPlots()
+===================================================*/
 const reduceLastTen = (accumulator, currentValue) => accumulator + currentValue;
 
-function initDateFromControl() {
-
-    let userDate = document.getElementById("histDate").value;
-    let userTime = document.getElementById("histTime").value;
-    endDate = new Date(new Date(userDate + ' ' + userTime).toUTCString());
-    setWindHistDepth(endDate, - Number(depth));
-}
-
+/* Establish the request start date/time
+============================================================*/
 function setWindHistDepth(date, minutes) {
     return new Date(date.getTime() + (minutes * 60000));
 };
 
+/* Assemble the request URL according to SSEC/AOSS 
+   UW-Madison requirements see https://metobs-test.ssec.wisc.edu/api/data
+===============================================================================*/
 function generateURL(site, symbols, lowerDate, upperDate) {
-
     return site + symbols + '&begin=' + formatDateForURL(lowerDate) + '&end=' + formatDateForURL(upperDate);
 }
+
+/* Format the the date for the request
+=====================================================*/
 function formatDateForURL(date) {
     return date.toISOString().substring(0, 10) + 'T' + date.toLocaleTimeString(FORMAT_FOR_TIME);
 }
 
+/* Updates slider display 
+==============================================================*/
 function showWindHist(hist) {
     document.querySelector('#windhistdisplay').value = hist;
-    depth = hist;
 }
-
+/* Generates random number
+====================================================================*/
 function randomNumber(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+/* Removes unnecessary characters
+====================================================*/
 function parseDate(ds) {
     return new Date(ds.replace('T', ' ').replace('Z', ''));
 }
 //#endregion 
 
-reloadData();
-
 
 function reloadData() {
 
+    let depth = document.querySelector('#windhistdisplay').value;
+    let userDate = document.getElementById("histDate").value;
+    let userTime = document.getElementById("histTime").value;
+    let endDate = new Date(new Date(userDate + ' ' + userTime).toUTCString());
     let uppderBnd = new Date(endDate.toUTCString());
     let lowerBnd = setWindHistDepth(uppderBnd, - Number(depth));
-    weaUrl = generateURL(urlSite, urlSymbols, lowerBnd, uppderBnd);
+    let weaUrl = generateURL(urlSite, urlSymbols, lowerBnd, uppderBnd);
+
     console.log(weaUrl);
 
     fetch(weaUrl)
@@ -178,25 +186,22 @@ function reloadData() {
                     plotTime
                 ]);
             };
-
-            showWindHist(depth);
             plot(weatherSourceData);
-
         });
 }
 
 
 
-
+/*
+  Generates a collection containing the user's measure selections (see
+    table "userSelections").  Currently only wind measures.  
+===========================================================================*/
 function collectPlotDisplayParameters(controls) {
     let controlParams = [];
-
     for (let i = PlotControlConstants.wind_speed; i <= PlotControlConstants.gust_last_10; i++) {
-
         let isChecked = document.getElementById(controls[i][PlotControlConstants.array_toggle]).checked;
         let color = document.getElementById(controls[i][PlotControlConstants.array_color]).value;
         let selectedIndex = document.getElementById(controls[i][PlotControlConstants.array_shape]).selectedIndex;
-
         controlParams.push({ checked: isChecked, color: color, shapeIdx: selectedIndex });
     }
     return controlParams;
@@ -215,32 +220,28 @@ function plot(weatherData) {
     let controls = collectPlotDisplayParameters(PlotContolIds);
 
     for (let i = PlotControlConstants.wind_speed; i <= PlotControlConstants.gust_last_10; i++) {
-
         if (controls[i].checked === true) {
             let shapeIdx = controls[i].shapeIdx;
             let axisName = PlotContolIds[i][PlotControlConstants.array_y_axis_name];
             let color = controls[i].color;
-            let startIndex = (axisName.includes('last10') ? 9 : 0)
+            let startIndex = (axisName.includes('last10') ? 9 : 0);
 
             if (shapeIdx === PLOT_CROSS) {
                 plotCross(windPlots, plotArea, 'speedLocationX', axisName, color, 7, startIndex);
-            }
+            };
             if (shapeIdx === PLOT_LINE) {
                 plotLine(windPlots, plotArea, 'speedLocationX', axisName, color, startIndex);
-            }
+            };
             if (shapeIdx === PLOT_BOX) {
                 plotPoint(windPlots, plotArea, 'speedLocationX', axisName, color, 3, startIndex);
-            }
-        }
-    }
-
+            };
+        };
+    };
     generateWindDirectionArrows(windPlots, plotArea);
     generateDataTable('dataDisplay', windPlots);
-
 }
 
 function generateWindDirectionArrows(windPlots, plotArea) {
-
     windPlots.forEach(wp => {
         drawWindDir(wp.direction, wp.speedLocationX, plotArea.chartTop + 30, 'mediumvioletred', plotArea);
     });
@@ -265,14 +266,11 @@ function generateGrid(plotArea) {
         ctx.stroke();
         positionX = positionX + plotArea.plotSpan;
     };
-
     ctx.lineWidth = 1;
     ctx.setLineDash([1, 6]);
     ctx.strokeStyle = 'red';
     ctx.font = '12px serif';
-
     for (let i = 5; i < 31; i += 5) {
-
         let yPos = i * WIND_PLOT_MULTIPLIER;
         let knots = i.toString(); //+ " Knots";
         ctx.setLineDash([1, 6]);
@@ -282,11 +280,9 @@ function generateGrid(plotArea) {
         ctx.stroke();
         ctx.setLineDash([]);
         ctx.strokeText(knots, plotArea.chartRight - 30, plotArea.chartBottom - yPos - 7);
-
     }
     ctx.setLineDash([]);
     ctx.strokeStyle = 'black';
-
 };
 
 function GetCanvasInfo(canvasId, numberOfWindPlots) {
@@ -316,15 +312,11 @@ function GetCanvasInfo(canvasId, numberOfWindPlots) {
 }
 
 function createWindPlots(WeatherData, plotArea) {
-
-
     let windPlots = [];
     let windAccum = 0;
     let gustAccum = 0;
     let windLast10 = [];
     let gustLast10 = [];
-
-
     //   let movingAverage = 0;
     for (let i = 0; i < WeatherData.length; i++) {
 
