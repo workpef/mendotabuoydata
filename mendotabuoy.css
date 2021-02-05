@@ -42,8 +42,7 @@ div#windplotsTop{
   overflow: hidden;
   width: 1200px;
   height: 40px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-radius: 10px;
   text-align: center;
   margin-top: 2px;
   padding-top: 15px;   
@@ -54,7 +53,8 @@ div#windplots{
   background-color:#a1abd4;
   overflow: hidden;
   width: 1200px;
-  height: 600px;
+  height: 800px;
+  border-radius: 10px;
 }
    
    div#dataDiv {
@@ -76,7 +76,12 @@ div#windplots{
        
    
    }
-   
+   .measures {
+     font-size: smaller;
+
+   }
+
+
    td , th{
        width: 50px;
        height: 1.5rem;
@@ -84,6 +89,7 @@ div#windplots{
        border-collapse: collapse;
        text-align: center;
        background-color: blanchedalmond;
+       font-size: small;
 
      }
    
