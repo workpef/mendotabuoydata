@@ -9,50 +9,51 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="mendotaBuoy.css">
-
     <script type="text/javascript" src="main.js"></script>
 </head>
 
 <body>
     <div style="display: flex; ">
+        <div class='infoStrip' id='infoBandDiv' width=1200>
+            <canvas id='infoBand' height=400 width=1200></canvas>
+        </div>
+        <div id='dataDiv'>
+            <table id='dataDisplay' style="border-collapse: collapse; width:auto">
+                <tr>
+                    <th>Entry #</th>
+                    <th>Local Time</th>
+                    <th>Wind Direction</th>
+                    <th>Wind Speed</th>
+                    <th>2 Min Avg</th>
+                    <th>Calculated Avg</th>
+                    <th>Gust</th>
+                    <th>Gust Avg</th>
+                    <th>Air Temp</th>
+                    <th>Water Temp</th>
+                    <th>Pressure</th>
+                </tr>
+            </table>
+        </div>
         <div>
-            <!--div id='windplotsTop'></div>
-            <script>
-                document.getElementById('windplotsTop').innerHTML = 'Requested at ==> ' + new Date().toLocaleString();
-            </script-->
-
-            <div id=windplots>
+            <div id=windplotDiv>
                 <canvas id='windPlots' height=800 width=1200></canvas>
             </div>
-
-            <!--div id='windhist'>
-                <button type="button" id="refresh" onclick="reloadData()" value="Refresh Data">Refresh Data</button>
-            </div -->
         </div>
         <div id="controlPane">
             <p class=paneControls>
                 <label class='plotControls' for='histDate'>Set Date</label>
                 <input class='plotControls' type='date' id='histDate'>
-                <!--onchange="initDateFromControl()"-->
             </p>
             <p class=paneControls>
                 <label class='plotControls' for='histTime'>Set Time</label>
                 <input class='plotControls' type='time' id='histTime'>
-                <!--onchange="initDateFromControl()"-->
             </p>
             <p class=paneControls>
-
                 <label class='plotControls' for="windhist">History</label>
                 <input class='plotControls' type="range" min="10" max="100" step="1" value="75" id="windhist"
                     oninput="showWindHist(value)">
-
                 <output class='plotControls' for="windhist" id=windhistdisplay></output>
-
-
             </p>
-            <!--p style="text-align: center; font-weight: bolder; color: darkred; margin-top: 3em;">
-                Include these measures
-            </p -->
             <p style=" margin-top: 3em;"></p>
             <table id='userSelections'
                 style="border-collapse: collapse; margin:2px; margin-left:20px; font-size: smaller;">
@@ -64,7 +65,7 @@
                 </tr>
                 <tr style="height:2em;">
                     <td colspan="4">Buoy and Tower Data</td>
-                </tr> 
+                </tr>
                 <tr style="height:3em;">
                     <td class="measures">Wind</td>
                     <td><input class='plotControlschkBox' type="checkbox" id="windSpeedToggle" checked></td>
@@ -100,12 +101,12 @@
                             <option value="Box">Box</option>
                         </select>
                     </td>
-                </tr>  
+                </tr>
                 <tr style="height:2em;">
                     <td colspan="4">Calculated Averges</td>
-                </tr>              
+                </tr>
                 <tr style="height:3em;">
-                    <td  class="measures"> Last 10 Wind Avg</td>
+                    <td class="measures"> Last 10 Wind Avg</td>
                     <td><input class='plotControlschkBox' type="checkbox" id="windSpeedLast10AvgToggle"></td>
                     <td><input type="color" id="windSpeedLast10AvgColor" value='#0bf417'></td>
                     <td>
@@ -117,7 +118,7 @@
                     </td>
                 </tr>
                 <tr style="height:3em;">
-                    <td  class="measures">Accum Wind Avg</td>
+                    <td class="measures">Accum Wind Avg</td>
                     <td><input class='plotControlschkBox' type="checkbox" id="windSpeedAccumAvgToggle"></td>
                     <td><input type="color" id="windSpeedAccumAvgColor" value='#4569dd'></td>
                     <td>
@@ -178,31 +179,22 @@
             </table>
             <div style="text-align: center; margin-top: 1em">
                 <button type="button" id="refresh" onclick="reloadData()" value="Refresh Data">Refresh Data</button>
+                <P>
+                    <button type="button" id="toggleInfo" onclick="toggleInfo()" value="Toggle Info">Toggle
+                        Info</button>
+                </P>
+                <P>
+                    <button type="button" id="toggleDataTable" onclick="toggleDataTable()"
+                        value="Toggle Data Table">Toggle Data Table</button>
+                </P>
             </div>
         </div>
-
-
-
     </div>
-    <div id='dataDiv'>
-        <table id='dataDisplay' style="border-collapse: collapse; width:auto">
-            <tr>
-                <th>Entry #</th>
-                <th>Local Time</th>
-                <th>Wind Direction</th>
-                <th>Wind Speed</th>
-                <th>2 Min Avg</th>
-                <th>Calculated Avg</th>
-                <th>Gust</th>
-                <th>Gust Avg</th>
-                <th>Air Temp</th>
-                <th>Water Temp</th>
-                <th>Pressure</th>
-            </tr>
-        </table>
-    </div>
+
 </body>
 <script>
+
+    document.getElementById('windPlots').addEventListener('click', function (e) { showAlert(e.clientX) });
     document.getElementById("histDate").value = '2020-07-19';
     document.getElementById("histTime").value = '15:00';
     showWindHist(75)

@@ -112,7 +112,7 @@ const MS_TO_KNOTS_CONVERSION = 1.944;
 const DEGREE_SYMBOL = '\u00B0';
 const FORMAT_FOR_TIME = 'en-GB';
 const WIND_PLOT_MULTIPLIER = 20;
-const WIND_PLOT_OFFSET = 40;
+
 
 //#region utility functions
 
@@ -158,6 +158,18 @@ function parseDate(ds) {
 }
 //#endregion 
 
+
+let infoIsHidden = true;
+function toggleInfo() {
+    document.getElementById('infoBandDiv').style.zIndex = infoIsHidden ? 10 : -10;
+    infoIsHidden = !infoIsHidden;
+}
+
+let dataTableIsHidden = true;
+function toggleDataTable() {
+    document.getElementById('dataDiv').style.zIndex = dataTableIsHidden ? 20 : -20;
+    dataTableIsHidden = !dataTableIsHidden;
+}
 
 function reloadData() {
 
@@ -239,10 +251,13 @@ function plot(weatherData) {
     const PLOT_CROSS = 0;
     const PLOT_LINE = 1;
     const PLOT_BOX = 2;
+    const WIND_PLOT_OFFSET = 40;
 
-    let plotArea = GetCanvasInfo('windPlots', weatherData.length);
+    let plotArea = GetCanvasInfo('windPlots', weatherData.length,WIND_PLOT_OFFSET);
+    let infoArea = GetCanvasInfo('infoBand', weatherData.length,WIND_PLOT_OFFSET);
     let windPlots = createWindPlots(weatherData, plotArea);
-    generateGrid(plotArea);
+    let aggregates = generateWeatherAggregates(windPlots);
+    generateWindGrid(plotArea);
     let controls = collectPlotDisplayParameters(PlotContolIds);
 
     for (let i = PlotControlConstants.wind_speed; i <= PlotControlConstants.gust_last_10; i++) {
@@ -265,8 +280,8 @@ function plot(weatherData) {
     };
     generateWindDirectionArrows(windPlots, plotArea);
     generateDataTable('dataDisplay', windPlots);
-    generateTextMeasures(windPlots, plotArea, controls);
-    plotTime(windPlots, plotArea, 10, 1,'darkblue');
+    generateTextMeasures(windPlots, infoArea, controls);
+    plotTime(windPlots, plotArea, 10, 1, 'darkblue');
 }
 
 function generateWindDirectionArrows(windPlots, plotArea) {
@@ -290,24 +305,39 @@ function generateTextMeasures(windPlots, plotArea, controls) {
     let showWaterTemp = controls[PlotControlConstants.water_temp].checked === true;
 
     let yPos = plotArea.height;
+    let context = plotArea.context;
 
     windPlots.forEach(wp => {
 
         let xPos = wp.speedLocationX;
 
         if (showWaterTemp && waterTemp !== wp.waterTemprature) {
-            plotTextMeasures(wp.waterTemprature.toString(), xPos, yPos - 65, waterTempColor, plotArea.context);
+            plotTextMeasures(wp.waterTemprature.toString(), xPos, yPos - 100, waterTempColor, context);
             waterTemp = wp.waterTemprature;
         };
         if (showAirTemp && wp.airTemprature !== airTemp) {
-            plotTextMeasures(wp.airTemprature.toString(), xPos, yPos - 40, airTempColor, plotArea.context);
+            plotTextMeasures(wp.airTemprature.toString(), xPos, yPos - 40, airTempColor, context);
             airTemp = wp.airTemprature;
         };
         if (showPressure && wp.pressure !== barometricPressure) {
-            plotTextMeasures(wp.pressure.toString(), xPos, 30, pressureColor, plotArea.context);
+            plotTextMeasures(wp.pressure.toString(), xPos, 30, pressureColor, context);
             barometricPressure = wp.pressure;
         };
     });
+
+
+    /* Temporary
+    ======================================================================================*/
+    context.fillStyle = 'brown';
+    context.font = '14px sans-serif';
+    context.fillText('Water Temp -----------------------------------------------',50 , yPos - 125);
+    context.fillText('Air Temp -------------------------------------------------',50 ,  yPos - 65);
+    context.fillText('Pressure -------------------------------------------------',50 ,  60);
+
+    context.font = '22px sans-serif';
+    context.fillText('Will contvert to individual charts in the future',100 , 100);
+
+    
 };
 
 
@@ -321,7 +351,7 @@ function plotTextMeasures(textValue, xPos, yPos, color, context) {
     context.setTransform(1, 0, 0, 1, 0, 0);
 };
 
-function plotTime(windPlots,plotArea, frequency, startIndex, color) {
+function plotTime(windPlots, plotArea, frequency, startIndex, color) {
     let index = 1;
     if (isNaN(startIndex)) startIndex = 1;
     let context = plotArea.context;
@@ -329,7 +359,7 @@ function plotTime(windPlots,plotArea, frequency, startIndex, color) {
 
         if (index === startIndex || (index > 1 && (index - startIndex) % frequency === 0)) {
 
-            context.translate(wp.speedLocationX , plotArea.height - 2);     // set origin
+            context.translate(wp.speedLocationX, plotArea.chartBottom + 25 );     // set origin
             context.rotate(-Math.PI / 2);
             context.fillStyle = color;
             context.font = '12px sans-serif';
@@ -347,21 +377,21 @@ function plotTime(windPlots,plotArea, frequency, startIndex, color) {
 
 
 
-function generateGrid(plotArea) {
+function generateWindGrid(plotArea) {
 
     let positionX = plotArea.chartLeft;
     let ctx = plotArea.context;
 
-    ctx.fillStyle = "#a1abd4";
+    ctx.fillStyle = 'lavender';
     ctx.fillRect(0, 0, plotArea.width, plotArea.height);
 
     ctx.lineWidth = 1;
     ctx.setLineDash([1, 8]);
-    ctx.strokeStyle = 'blue';
+    ctx.strokeStyle = 'black';
 
     while (positionX < plotArea.chartRight) {
         ctx.beginPath();
-        ctx.moveTo(positionX, 0);
+        ctx.moveTo(positionX, plotArea.chartTop);
         ctx.lineTo(positionX, plotArea.chartBottom);
         ctx.stroke();
         positionX = positionX + plotArea.plotSpan;
@@ -375,18 +405,62 @@ function generateGrid(plotArea) {
         let knots = i.toString(); //+ " Knots";
         ctx.setLineDash([1, 6]);
         ctx.beginPath();
-        ctx.moveTo(0 + 20, plotArea.chartBottom - yPos);
+        ctx.moveTo(plotArea.chartLeft, plotArea.chartBottom - yPos);
         ctx.lineTo(plotArea.chartRight, plotArea.chartBottom - yPos);
         ctx.stroke();
         ctx.setLineDash([]);
-        ctx.strokeText(knots, plotArea.chartRight - 30, plotArea.chartBottom - yPos - 7);
+        ctx.strokeText(knots, plotArea.chartRight + 5, plotArea.chartBottom - yPos +3);
     }
     ctx.setLineDash([]);
     ctx.strokeStyle = 'black';
 };
 
-function GetCanvasInfo(canvasId, numberOfWindPlots) {
-    const offset = WIND_PLOT_OFFSET;
+function plotTempsGrid(windPlots, plotArea,aggregates) {
+    let positionX = plotArea.chartLeft;
+    let ctx = plotArea.context;
+
+    ctx.fillStyle = "#e5ce8f;";
+    ctx.fillRect(0, 0, plotArea.width, plotArea.height);
+    ctx.lineWidth = 1;
+    ctx.setLineDash([1, 8]);
+    ctx.strokeStyle = 'black';
+
+    while (positionX < plotArea.chartRight) {
+        ctx.beginPath();
+        ctx.moveTo(positionX, plotArea.chartTop);
+        ctx.lineTo(positionX, plotArea.chartBottom);
+        ctx.stroke();
+        positionX = positionX + plotArea.plotSpan;
+    };
+  
+    ctx.lineWidth = 1;
+    ctx.setLineDash([1, 6]);
+    ctx.strokeStyle = 'red';  
+    
+    let min = aggregates.pressure.min;
+    let max = aggregates.pressure.max;
+    let vertSpan = Math.round(aggregates.pressure.max - aggregates.pressure.min ) + 1;
+
+    for(let i = 0; i <= vertSpan; i++){
+
+        ctx.beginPath();
+        ctx.moveTo(plotArea.chartLeft, );
+        ctx.lineTo(plotArea.chartRight, plotArea.chartBottom - yPos);
+
+    }
+    
+
+
+
+
+    
+
+
+
+}
+
+function GetCanvasInfo(canvasId, numberOfWindPlots,offset) {
+  
     let canvasInstance = document.getElementById(canvasId);
     let ctx = canvasInstance.getContext("2d");
     let cWidth = canvasInstance.width;
@@ -397,6 +471,8 @@ function GetCanvasInfo(canvasId, numberOfWindPlots) {
     let bottom = canvasInstance.height - (offset + 40);
     let right = canvasInstance.width - offset;
     let plotWidth = (cWidth - (2 * offset)) / numberOfWindPlots;
+
+
 
     return {
         canvas: canvasInstance,
@@ -410,6 +486,9 @@ function GetCanvasInfo(canvasId, numberOfWindPlots) {
         plotSpan: plotWidth
     };
 }
+function showAlert(pos) {
+    alert('X position: ' + pos);
+}
 
 function createWindPlots(WeatherData, plotArea) {
     let windPlots = [];
@@ -417,7 +496,7 @@ function createWindPlots(WeatherData, plotArea) {
     let gustAccum = 0;
     let windLast10 = [];
     let gustLast10 = [];
-    //   let movingAverage = 0;
+
     for (let i = 0; i < WeatherData.length; i++) {
 
         let wp = Object.create(WindRec);
@@ -429,7 +508,7 @@ function createWindPlots(WeatherData, plotArea) {
         windLast10.push(wp.speed);
 
         wp.gust = WeatherData[i][UrlSymbolsConstants.mendota_buoy_gust];
-        //wp.calcWindMovingAverage = Number((wp.speed + wp.gust) / 2).toFixed(1);
+
         gustAccum += wp.gust;
         gustLast10.push(wp.gust);
         wp.calcGustMovingAverage = Number(gustAccum / (i + 1)).toFixed(1);
@@ -448,6 +527,8 @@ function createWindPlots(WeatherData, plotArea) {
 
         wp.calcWindMovingAverageLocaionY = plotArea.chartBottom - (WIND_PLOT_MULTIPLIER * wp.calcWindMovingAverage);
 
+
+
         if (i > 8) {
 
             let ltw = windLast10.slice(i - 9, i).reduce(reduceLastTen);
@@ -463,6 +544,29 @@ function createWindPlots(WeatherData, plotArea) {
     return windPlots;
 }
 
+function generateWeatherAggregates(windPlots) {
+    let aggregates =
+    {
+        airTemprature: { min: 10000, max: 0, spread: 0 },
+        waterTemprature: { min: 10000, max: 0, spread: 0 },
+        pressure: { min: 10000, max: 0, spread: 0 }
+    };
+    windPlots.forEach(wp => {
+        aggregates.airTemprature.min = Math.min(aggregates.airTemprature.min, Number(wp.airTemprature));
+        aggregates.airTemprature.max = Math.max(aggregates.airTemprature.max, Number(wp.airTemprature));
+        aggregates.airTemprature.spread = Math.ceil(aggregates.waterTemprature.max - aggregates.waterTemprature.min);
+
+        aggregates.waterTemprature.min = Math.min(aggregates.waterTemprature.min, Number(wp.waterTemprature));
+        aggregates.waterTemprature.max = Math.max(aggregates.waterTemprature.max, Number(wp.waterTemprature));
+        aggregates.waterTemprature.spread = Math.ceil(aggregates.waterTemprature.max - aggregates.waterTemprature.min);
+
+        aggregates.pressure.min = Math.min(aggregates.pressure.min, Number(wp.pressure));
+        aggregates.pressure.max = Math.max(aggregates.pressure.max, Number(wp.pressure));
+        aggregates.pressure.spread = Math.ceil(aggregates.waterTemprature.max - aggregates.waterTemprature.min);
+    });
+
+    return aggregates;
+}
 
 
 function plotPoint(windPlots, plotArea, posX, posY, fillColor, lineOffset, startIndex) {
@@ -502,7 +606,6 @@ function plotCross(windPlots, plotArea, posX, posY, lineColor, lineLength, start
     if (!Number.isNaN(startIndex)) { initialIndex = startIndex; };
     for (let i = initialIndex; i < windPlots.length; i++) {
         let wp = windPlots[i];
-
         ctx.beginPath();
         ctx.strokeStyle = lineColor;
         ctx.moveTo(wp[posX], wp[posY] - segment);
@@ -513,7 +616,6 @@ function plotCross(windPlots, plotArea, posX, posY, lineColor, lineLength, start
         ctx.moveTo(wp[posX] - segment, wp[posY]);
         ctx.lineTo(wp[posX] + segment, wp[posY]);
         ctx.stroke();
-
     };
 
 }
@@ -580,7 +682,6 @@ function generateDataTable(elementId, windPlots) {
 };
 
 
-//        drawWindDir(wp.direction, wp.speedLocationX, plotArea.chartTop + 5, 'mediumvioletred', plotArea);
 
 function drawWindDir(windDirection, newOriginXaxis, newOriginYAxis, arrowColor, plotArea) {
 

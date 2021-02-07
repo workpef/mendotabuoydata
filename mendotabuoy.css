@@ -1,26 +1,68 @@
 .plotControls {
-    margin: 10px;
+  margin: 10px;
 }
 
-.plotControlschkBox {     
-    /* padding-right: 30px;*/
+.plotControlschkBox {
+  padding-right: 30px;
+  /*color: #e5ce8f; */
 }
 
-div#datestamp{
-       margin-left: 5%;
-       font-size: larger;
-       font-weight: bolder; 
+.notUsed {
+  color: lavender
 }
+
+div#dataDiv {
+  z-index: -20;
+  position: fixed;
+  top: 15px;
+  overflow: scroll;
+  height: 400px;
+  width: 700px;
+
+  margin-top: 100px;
+  margin-left: 100px;
+  background-color: brown;
+  opacity: 0.9;
+
+
+}
+
+.infoStrip {
+
+  z-index: -10;
+  background-color: rgb(159, 157, 182);
+  color: aliceblue;
+  height: 400;
+
+  top: 100;
+  position: fixed;
+  opacity: 0.9;
+
+  border-radius: 10px;
+  margin-top: 100px;
+
+  text-align: center;
+
+
+}
+
+div#datestamp {
+  margin-left: 5%;
+  font-size: larger;
+  font-weight: bolder;
+}
+
 div#controlPane {
-    width: 300px; 
-    background-color: #45cc7d;
-    margin-left: 2px;
-     border-radius: 10px;
-     align-content: center;
+  width: 300px;
+  background-color: #45cc7d;
+  margin-left: 2px;
+  border-radius: 10px;
+  align-content: stretch;
 
 }
+
 .paneControls {
-    height: 20px;
+  height: 20px;
 }
 
 div#windhist {
@@ -35,8 +77,8 @@ div#windhist {
   padding-top: 10px;
 
 }
-   
-div#windplotsTop{
+
+div#windplotsTop {
 
   background-color: cadetblue;
   overflow: hidden;
@@ -45,75 +87,68 @@ div#windplotsTop{
   border-radius: 10px;
   text-align: center;
   margin-top: 2px;
-  padding-top: 15px;   
+  padding-top: 15px;
 }
 
-div#windplots{
+div#windplotDiv {
   margin-top: 2px;
-  background-color:#a1abd4;
+  background-color: #a1abd4;
   overflow: hidden;
   width: 1200px;
   height: 800px;
   border-radius: 10px;
 }
-   
-   div#dataDiv {
-       position: relative; 
-       top: 15px;
-       overflow: scroll;
-       height: 400px;
-       width: 1200px;
-       border-color: crimson;
-   
-   
-   }
-   table#dataDisplay {
-       width: 600px;
-       height: 300px;
-       margin-left: 5%;
 
 
-       
-   
-   }
-   .measures {
-     font-size: smaller;
-
-   }
-
-
-   td , th{
-       width: 50px;
-       height: 1.5rem;
-       border: 2px solid #000000;
-       border-collapse: collapse;
-       text-align: center;
-       background-color: blanchedalmond;
-       font-size: small;
-
-     }
-   
-     th {
-       background-color:lightsteelblue  ;
-     }
-     body {
-         font-family: sans-serif;
-         font-size: medium;
-      /* padding: 1rem;*/
-     }
-     
-   
-    #button {
-       appearance: none;
-       border: 0;
-       border-radius: 5px;
-       background: #4676D7;
-       color: #fff;
-       padding: 8px 16px;
-       font-size: 16px;
-     }
-body {
-  background-color: #b5c8d3;
+table#dataDisplay {
+  width: 600px;
+  height: 300px;
+  margin-left: 5%;
+  margin-top: 8%;
+  align-content: stretch;
 }
-     
-     
+
+.measures {
+  font-size: smaller;
+
+}
+
+
+td,
+th {
+  width: 50px;
+  height: 1.5rem;
+  border: 2px solid #000000;
+  border-collapse: collapse;
+  text-align: center;
+  background-color: blanchedalmond;
+  font-size: small;
+
+}
+
+th {
+  background-color: lightsteelblue;
+}
+
+body {
+  font-family: sans-serif;
+  font-size: medium;
+
+  /* padding: 1rem;*/
+}
+
+
+#button {
+  appearance: none;
+  border: 0;
+  border-radius: 5px;
+  background: #4676D7;
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 16px;
+}
+
+body {
+  /* background-color: #b5c8d3; */
+  background-color: #220202;
+}
