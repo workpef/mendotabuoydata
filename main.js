@@ -86,7 +86,7 @@ const PlotControlConstants = {
     array_y_axis_name: 3
 };
 
-const urlSite = 'http://metobs.ssec.wisc.edu/api/data.json?';
+const urlSite = 'https://metobs.ssec.wisc.edu/api/data.json?';
 const urlSymbols =
     'symbols=' +
     'mendota.buoy.wind_speed:' +
@@ -159,16 +159,24 @@ function parseDate(ds) {
 //#endregion 
 
 
-let infoIsHidden = true;
+let hidePressureTempPane = true;
 function toggleInfo() {
-    document.getElementById('infoBandDiv').style.zIndex = infoIsHidden ? 10 : -10;
-    infoIsHidden = !infoIsHidden;
+
+    document.getElementById('infoBandDiv').style.zIndex = hidePressureTempPane ? 10 : -10;
+    hidePressureTempPane = !hidePressureTempPane;
+    document.getElementById('toggleInfo').innerHTML = hidePressureTempPane ? 'Show Temps & Pressure' : 'Hide Temps & Pressure';
 }
+    
+
 
 let dataTableIsHidden = true;
 function toggleDataTable() {
-    document.getElementById('dataDiv').style.zIndex = dataTableIsHidden ? 20 : -20;
+    let zidx = dataTableIsHidden ? 20 : -20;
+    document.getElementById('dataDiv').style.zIndex = zidx;
+ //   document.getElementById('innerDataDiv').style.zIndex = zidx;
+
     dataTableIsHidden = !dataTableIsHidden;
+    document.getElementById('toggleDataTable').innerHTML = dataTableIsHidden ? 'Show <br> Data Table' : 'Hide <br> Data Table';
 }
 
 function reloadData() {
@@ -335,7 +343,7 @@ function generateTextMeasures(windPlots, plotArea, controls) {
     context.fillText('Pressure -------------------------------------------------',50 ,  60);
 
     context.font = '22px sans-serif';
-    context.fillText('Will contvert to individual charts in the future',100 , 100);
+    context.fillText('In the future--will contvert to individual chart bands in the popup  ',100 , 100);
 
     
 };
@@ -382,12 +390,12 @@ function generateWindGrid(plotArea) {
     let positionX = plotArea.chartLeft;
     let ctx = plotArea.context;
 
-    ctx.fillStyle = 'lavender';
+    ctx.fillStyle = '#f0f0f0';
     ctx.fillRect(0, 0, plotArea.width, plotArea.height);
 
     ctx.lineWidth = 1;
     ctx.setLineDash([1, 8]);
-    ctx.strokeStyle = 'black';
+    ctx.strokeStyle = '#666666';
 
     while (positionX < plotArea.chartRight) {
         ctx.beginPath();
