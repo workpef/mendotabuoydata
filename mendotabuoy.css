@@ -1,49 +1,91 @@
 .plotControls {
-  margin: 10px;
+  margin: 1px;
+}
+
+
+.paneControls {
+  height: 18px;
+  margin-left: 10px;
+  font-size: small;
+  align-content: center;
+
+}
+
+.measures {
+  font-size: smaller;
+  width: 100px;
+
 }
 
 .plotControlschkBox {
   padding-right: 30px;
-  /*color: #e5ce8f; */
+    /*color: #e5ce8f; */
 }
 
 .notUsed {
   color: lavender
 }
 
-div#dataDiv {
+div#innerDataDiv {
+  height: 500px;
+  width: 700px;
+  background-color: brown;
+  border-radius: 10px;
   z-index: -20;
   position: fixed;
-  top: 15px;
-  overflow: scroll;
-  height: 400px;
-  width: 700px;
-
-  margin-top: 100px;
-  margin-left: 100px;
-  background-color: brown;
-  opacity: 0.9;
+  box-shadow: inset 2px 2px 3px #999;
+  overflow-y: scroll;
 
 
 }
 
-.infoStrip {
 
+
+div#dataDiv {
+  z-index: -20;
+  position: fixed;
+  top: 25px;
+ 
+  height: 700px;
+  width: 1150px;
+  padding-bottom: 20px;
+  margin-top: 20px;
+  margin-left: 20px;
+  background-color: brown;
+  border-radius: 10px;
+
+  display: block;
+
+}
+
+div#aboutDiv {
+
+  width: 1200;
+  height: 500;
+}
+.aboutBox {
+  z-index: -30;
+  background-color: #c0c0c0;
+  color:#000040 ;
+  width:1200;
+  height: 500;
+  top: 100;
+  position: fixed; 
+  border-radius: 10px;
+  margin: 10%;
+  text-align: center;
+}
+
+.infoStrip {
   z-index: -10;
   background-color: rgb(159, 157, 182);
   color: aliceblue;
   height: 400;
-
   top: 100;
   position: fixed;
-  opacity: 0.9;
-
   border-radius: 10px;
   margin-top: 100px;
-
   text-align: center;
-
-
 }
 
 div#datestamp {
@@ -53,17 +95,17 @@ div#datestamp {
 }
 
 div#controlPane {
-  width: 300px;
-  background-color: #45cc7d;
+  width: 365px;
+  background-color: #b6b8b7;
   margin-left: 2px;
   border-radius: 10px;
-  align-content: stretch;
+  align-content: center;
+
+
 
 }
 
-.paneControls {
-  height: 20px;
-}
+
 
 div#windhist {
   background-color: cadetblue;
@@ -92,7 +134,7 @@ div#windplotsTop {
 
 div#windplotDiv {
   margin-top: 2px;
-  background-color: #a1abd4;
+  background-color: #f0f0f0;
   overflow: hidden;
   width: 1200px;
   height: 800px;
@@ -101,33 +143,71 @@ div#windplotDiv {
 
 
 table#dataDisplay {
-  width: 600px;
-  height: 300px;
+  width: 90%;
+  height: 80%;
   margin-left: 5%;
   margin-top: 8%;
-  align-content: stretch;
+  position: relative;
+
+  /*  margin-bottom: 10%;
+ /* overflow-y: scroll; 
+  align-content: stretch; */
 }
 
-.measures {
-  font-size: smaller;
-
-}
 
 
-td,
+
 th {
-  width: 50px;
+  width: 100px;
   height: 1.5rem;
   border: 2px solid #000000;
   border-collapse: collapse;
   text-align: center;
-  background-color: blanchedalmond;
+  background-color: #ecececec;
   font-size: small;
+  padding-left: 4px;
+  padding-right: 2px;
+
 
 }
 
+td {
+  width: 100px;
+  height: 1.5rem;
+  border: 2px solid #000000;
+  border-collapse: collapse;
+  text-align: center;
+  background-color: #ecececec;
+  font-size: small;
+  padding-left: 4px;
+  padding-right: 2px;
+
+
+}
+
+table thead th:first-child {
+  position: sticky;
+  left: 0;  
+  z-index: 2;
+}
+
 th {
-  background-color: lightsteelblue;
+  background-color: #ebebeb;
+  text-align: center;
+
+}
+
+thead,
+tbody {
+  display: block;
+}
+
+
+
+tbody {
+  
+  overflow: auto;
+  max-height: 600px;
 }
 
 body {
@@ -137,15 +217,31 @@ body {
   /* padding: 1rem;*/
 }
 
+.refreshButton {
 
-#button {
-  appearance: none;
+  appearance: auto;
   border: 0;
+  width: 50%;
+  margin-left: 20%;
+  height: fit-content;
   border-radius: 5px;
-  background: #4676D7;
-  color: #fff;
-  padding: 8px 16px;
-  font-size: 16px;
+  background: #484a49;
+  color: #f8f8f8;
+  padding: 4px 2px 4px 2px;
+  font-size: 11.5px;
+
+
+}
+
+.bottombutton {
+  appearance: auto;
+  border: 0;
+  width: 40%;
+  border-radius: 5px;
+  background: #484a49;
+  color: #f8f8f8;
+  padding: 4px 2px 4px 2px;
+  font-size: 11.5px;
 }
 
 body {
