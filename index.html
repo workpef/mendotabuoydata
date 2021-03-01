@@ -5,208 +5,305 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>PF's Weather Channel</title>
+    <title>Lake Mendota Buoy Data</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="mendotaBuoy.css">
-
-    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="mendotaBuoy.js"></script>
 </head>
 
 <body>
     <div style="display: flex; ">
-        <div>
-            <!--div id='windplotsTop'></div>
-            <script>
-                document.getElementById('windplotsTop').innerHTML = 'Requested at ==> ' + new Date().toLocaleString();
-            </script-->
 
-            <div id=windplots>
+        <div class='infoStrip' id='infoBandDiv' width=1200>
+            <p style="font-size: xx-large;"> Coming Soon</p>
+            <canvas id='popUp' height=400 width=1200></canvas>
+        </div>
+
+        <div class='aboutBox' id='aboutDiv' width=1200 >
+            <p style="font-size: xx-large; margin: 10px">A Sailor's View of</p>
+            <p style="font-size: xx-large; margin: 10px">Lake Mendota Buoy and AOSS Tower Data</p>
+            <p>Web site created by: <a href="mailto:paul@watersheddataworks.com"> Paul Flowerman</a></p>
+            <p>Data provided courtesy of University of Wisconsin-Madison <br> 
+                Space Science and Engineering Center (<a href="https://www.ssec.wisc.edu/" target="_blank" rel="noopener noreferrer">SSEC</a> ) <br>
+                SSEC Data <a href="https://metobs-test.ssec.wisc.edu/api/data" target="_blank" rel="noopener noreferrer">API Documentation</a>
+            </p>
+            <p></p>
+
+        </div>        
+
+        <div id='dataDiv'>
+           
+            <table id='dataDisplay' style="border-collapse: collapse; ">
+
+                <tr>
+                    <th colspan="18">Data Used for Chart</th>
+                </tr>
+                <tr>
+                    <th rowspan="3">Entry #</th>
+                    <th rowspan="3">Local Time</th>
+                    <th colspan="10">Buoy Data</th>
+                    <th rowspan="2" colspan="6">Tower Data</th> 
+                </tr>
+                <tr>
+                    <th colspan="5">Wind</th>
+                    <th colspan="3">Gust</th>
+                    <th colspan="2">Temps</th>
+                </tr>
+                <tr>
+                    <th>Speed</th>
+                    <th>2 Minute Average</th>
+                    <th>Runing Average</th>
+                    <th>Range Average</th>
+                    <th>Direction</th>
+                    <th>Speed</th>
+                    <th>Running Average</th>
+                    <th>Range Average</th>
+                    <th>Air</th>
+                    <th>Water</th>
+
+                    <th>Speed</th>
+                    <th>Runing Average</th>
+                    <th>Range Average</th>
+                    <th>Direction</th>
+                    <th>Pressure</th>
+                    <th>Air Temp</th>
+                </tr>
+                <tbody style="max-height: 300px;">
+
+                </tbody>
+            </table>
+
+        </div>
+
+        <div>
+            <div id=windplotDiv>
                 <canvas id='windPlots' height=800 width=1200></canvas>
             </div>
-
-            <!--div id='windhist'>
-                <button type="button" id="refresh" onclick="reloadData()" value="Refresh Data">Refresh Data</button>
-            </div -->
         </div>
+
         <div id="controlPane">
+
             <p class=paneControls>
-                <label class='plotControls' for='histDate'>Set Date</label>
-                <input class='plotControls' type='date' id='histDate'>
-                <!--onchange="initDateFromControl()"-->
-            </p>
-            <p class=paneControls>
-                <label class='plotControls' for='histTime'>Set Time</label>
-                <input class='plotControls' type='time' id='histTime'>
-                <!--onchange="initDateFromControl()"-->
+                <label class='plotControls' for='histDate'>Date</label>
+                <input style="font-size: small;" class='plotControls' type='date' id='histDate'>
+                <label style="margin-left: 10px" class='plotControls' for='histTime'>Time</label>
+                <input style="font-size: small;" class='plotControls' type='time' id='histTime'>
             </p>
             <p class=paneControls>
 
-                <label class='plotControls' for="windhist">History</label>
-                <input class='plotControls' type="range" min="10" max="100" step="1" value="75" id="windhist"
-                    oninput="showWindHist(value)">
-
+                <label style="width: 40% ; margin-left: 15px ;" class='plotControls' for="windhist">History</label>
+                <input style="width: 50% ; margin-left: 5px ;" class='plotControls' type="range" min="10" max="120"
+                    step="1" value="120" id="windhist" oninput="showWindHist(value)">
                 <output class='plotControls' for="windhist" id=windhistdisplay></output>
 
+                <button class="refreshButton" type="button" id="collectData" onclick="collectData()"
+                    value="collectData">Refresh Buoy Data</button>
 
             </p>
-            <!--p style="text-align: center; font-weight: bolder; color: darkred; margin-top: 3em;">
-                Include these measures
-            </p -->
+
+
             <p style=" margin-top: 3em;"></p>
             <table id='userSelections'
-                style="border-collapse: collapse; margin:2px; margin-left:20px; font-size: smaller;">
+                style="border-collapse: collapse; margin-left:12%;  font-size: smaller; width: 60%;">
                 <tr>
                     <th>Measure</th>
                     <th>Include</th>
                     <th>Color</th>
                     <th>Style</th>
                 </tr>
+
+
                 <tr style="height:2em;">
-                    <td colspan="4">Buoy and Tower Data</td>
-                </tr> 
+                    <td colspan="4">Buoy Data</td>
+                </tr>
                 <tr style="height:3em;">
                     <td class="measures">Wind</td>
-                    <td><input class='plotControlschkBox' type="checkbox" id="windSpeedToggle" checked></td>
-                    <td><input type="color" id=windSpeedColor value="#000000"></td>
+                    <td class="measures"><input class='plotControlschkBox' type="checkbox" id="buoyWindSpeedCb" checked>
+                    </td><!-- -->
+                    <td><input type="color" id=buoyWindSpeedClr value="#000000"></td>
                     <td>
-                        <select id="windSpeedShape">
-                            <option value="Cross" selected>Cross</option>
-                            <option value="Line">Line</option>
-                            <option value="Box">Box</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr style="height:3em;">
-                    <td class="measures">2 Min Wind Avg</td>
-                    <td><input class='plotControlschkBox' type="checkbox" id="windSpeedSsecAvgToggle" checked></td>
-                    <td><input type="color" id="windSpeedSsecAvgColor" value='#d2691e'></td>
-                    <td>
-                        <select id="windSpeedSsecAvgShape">
+                        <select id="buoyWindSpeedShape">
                             <option value="Cross">Cross</option>
                             <option value="Line" selected>Line</option>
-                            <option value="Box">Box</option>
+                            <option value="Block">Block</option>
                         </select>
                     </td>
                 </tr>
                 <tr style="height:3em;">
-                    <td class="measures">Gust</td>
-                    <td><input class='plotControlschkBox' type="checkbox" id="gustToggle"></td>
-                    <td><input type="color" id="gustColor" value='#dd45b7'></td>
+                    <td class="measures">2 Min Avg</td>
+                    <td><input class='plotControlschkBox' type="checkbox" id="buoyRunWindCb"></td><!-- -->
+                    <td><input type="color" id="buoyRunWindClr" value='#11791e'></td>
                     <td>
-                        <select id="gustShape">
-                            <option value="Cross" selected>Cross</option>
-                            <option value="Line">Line</option>
-                            <option value="Box">Box</option>
-                        </select>
-                    </td>
-                </tr>  
-                <tr style="height:2em;">
-                    <td colspan="4">Calculated Averges</td>
-                </tr>              
-                <tr style="height:3em;">
-                    <td  class="measures"> Last 10 Wind Avg</td>
-                    <td><input class='plotControlschkBox' type="checkbox" id="windSpeedLast10AvgToggle"></td>
-                    <td><input type="color" id="windSpeedLast10AvgColor" value='#0bf417'></td>
-                    <td>
-                        <select id="windSpeedLast10AvgShape">
+                        <select id="buoyRunWindShape">
                             <option value="Cross">Cross</option>
                             <option value="Line" selected>Line</option>
-                            <option value="Box">Box</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr style="height:3em;">
-                    <td  class="measures">Accum Wind Avg</td>
-                    <td><input class='plotControlschkBox' type="checkbox" id="windSpeedAccumAvgToggle"></td>
-                    <td><input type="color" id="windSpeedAccumAvgColor" value='#4569dd'></td>
-                    <td>
-                        <select id="windSpeedAccumAvgShape">
-                            <option value="Cross">Cross</option>
-                            <option value="Line">Line</option>
-                            <option value="Box" selected>Box</option>
+                            <option value="Block">Block</option>
                         </select>
                     </td>
                 </tr>
 
                 <tr style="height:3em;">
-                    <td class="measures">Gust Last 10</td>
-                    <td><input class='plotControlschkBox' type="checkbox" id="gustLast10Toggle"></td>
-                    <td><input type="color" id="gustLast10Color" value='#e21f1f'></td>
+                    <td class="measures">Run Avg</td>
+                    <td><input class='plotControlschkBox' type="checkbox" id="buoyWindCalcAvgCb" checked></td><!-- -->
+                    <td><input type="color" id="buoyWindCalcAvgClr" value='#4569dd'></td>
                     <td>
-                        <select id="gustLast10Shape">
+                        <select id="buoyWindCalcAvgShape">
                             <option value="Cross">Cross</option>
-                            <option value="Line" selected>Line</option>
-                            <option value="Box">Box</option>
+                            <option value="Line">Line</option>
+                            <option value="Block" selected>Block</option>
                         </select>
                     </td>
                 </tr>
-                <tr style="height:2em;">
-                    <td colspan="4">Direction, Tempratures and Barometric Pressure</td>
-                </tr>
+
                 <tr style="height:3em;">
-                    <td class="measures">Wind Dir Arrow</td>
-                    <td><input class='plotControlschkBox' type="checkbox" id="windArrowToggle" checked></td>
-                    <td><input type="color" id="windArrowColor" value='#e21fd8'></td>
+                    <td class="measures"> Rng Avg</td>
+                    <td><input class='plotControlschkBox' type="checkbox" id="buoyWindRngAvgCb"></td> <!-- -->
+                    <td><input type="color" id="buoyWindRngAvgClr" value='#800000'></td>
                     <td>
-                        <select id="windArrowLocation">
-                            <option>Above</option>
-                            <option selected>On Plot</option>
+                        <select id="buoyWindRngAvgShape">
+                            <option value="Cross">Cross</option>
+                            <option value="Line" selected>Line</option>
+                            <option value="Block">Block</option>
+                        </select>
+                    </td>
+                </tr>
+
+
+                <tr style="height:3em;">
+                    <td class="measures">Gust</td>
+                    <td><input class='plotControlschkBox' type="checkbox" id="buoyGustCb"></td><!-- -->
+                    <td><input type="color" id="buoyGustClr" value='#2d064d'></td>
+                    <td>
+                        <select id="buoyGustShape">
+                            <option value="Cross" selected>Cross</option>
+                            <option value="Line">Line</option>
+                            <option value="Block">Block</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr style="height:3em;">
+                    <td class="measures">Gust Run Avg</td>
+                    <td><input class='plotControlschkBox' type="checkbox" id="buoyGustCalcAvgCb"></td> <!-- -->
+                    <td><input type="color" id="buoyGustCalcAvgClr" value='#e21f1f'></td>
+                    <td>
+                        <select id="buoyGustCalcAvgShape">
+                            <option value="Cross">Cross</option>
+                            <option value="Line" selected>Line</option>
+                            <option value="Block">Block</option>
+                        </select>
+                    </td>
+                </tr>
+
+
+                <tr style="height:3em;">
+                    <td class="measures">Gust Rng Avg</td>
+                    <td><input class='plotControlschkBox' type="checkbox" id="buoyGustRngAvgCb"></td> <!-- -->
+                    <td><input type="color" id="buoyGustRngAvgClr" value='#5D3954'></td>
+                    <td>
+                        <select id="buoyGustRngAvgShape">
+                            <option value="Cross">Cross</option>
+                            <option value="Line" selected>Line</option>
+                            <option value="Block">Block</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr style="height:3em;">
+                    <td class="measures">Wind Dir </td>
+                    <td><input class='plotControlschkBox' type="checkbox" id="buoyWindDirCb" checked></td>
+                    <td><input type="color" id="buoyWindDirClr" value='#e21fd8'></td>
+                    <td>
+                        <select id="buoyWindDirLocation">
+                            <option selected>Above</option>
+                            <option >On Plot</option>
                             <option>Below</option>
                         </select>
                     </td>
                 </tr>
 
-                <tr style="height:3em;">
-                    <td class="measures">Air Temp</td>
-                    <td><input class='plotControlschkBox' type="checkbox" id="airTempToggle"></td>
-                    <td><input type="color" id="airTempColor" value='green'></td>
-                    <td></td>
+                <tr style="height:2em;">
+                    <td colspan="4">Tower Data</td>
                 </tr>
                 <tr style="height:3em;">
-                    <td class="measures">Water Temp</td>
-                    <td><input class='plotControlschkBox' type="checkbox" id="waterTempToggle"></td>
-                    <td><input type="color" id="waterTempColor" value='red'></td>
-                    <td> </td>
+                    <td class="measures">Wind Spped</td>
+                    <td><input class='plotControlschkBox' type="checkbox" id="aossWindSpeedCb"></td> <!-- -->
+                    <td><input type="color" id="aossWindSpeedClr" value='#01796F'></td>
+                    <td>
+                        <select id="aossWindSpeedShape">
+                            <option value="Cross" selected>Cross</option>
+                            <option value="Line">Line</option>
+                            <option value="Block">Block</option>
+                        </select>
+                    </td>
+                </tr>
+
+
+                <tr style="height:3em;">
+                    <td class="measures">Run Avg</td>
+                    <td><input class='plotControlschkBox' type="checkbox" id="aossWindCalcAvgCb"></td><!-- -->
+                    <td><input type="color" id="aossWindCalcAvgClr" value='#013220'></td>
+                    <td>
+                        <select id="aossWindCalcAvgShape">
+                            <option value="Cross">Cross</option>
+                            <option value="Line" selected>Line</option>
+                            <option value="Block">Block</option>
+                        </select>
+                    </td>
                 </tr>
                 <tr style="height:3em;">
-                    <td class="measures">Pressure</td>
-                    <td><input class='plotControlschkBox' type="checkbox" id="barometricToggle"></td>
-                    <td><input type="color" id="barometricColor" value='blue'></td>
-                    <td> </td>
+                    <td class="measures">Rng Avg</td>
+                    <td><input class='plotControlschkBox' type="checkbox" id="aossWindRngAvgCb" ></td><!-- -->
+                    <td><input type="color" id="aossWindRngAvgClr" value='#e21fd8'></td>
+                    <td>
+                        <select id="aossWindRngAvgShape">
+                            <option value="Cross">Cross</option>
+                            <option value="Line" selected>Line</option>
+                            <option value="Block">Block</option>
+                        </select>
+                    </td>
                 </tr>
+
+                <tr style="height:3em;">
+                    <td class="measures">Wind Dir</td>
+                    <td><input class='plotControlschkBox' type="checkbox" id="aossWindDirCb"></td>
+                    <td><input type="color" id="aossWindDirClr" value='#001f3f'></td>
+                    <td>
+                        <select id="aossWindDirLocation">
+                            <option>Above</option>
+                            <option>On Plot</option>
+                            <option selected>Below</option>
+                        </select>
+                    </td>
+                </tr>
+
             </table>
             <div style="text-align: center; margin-top: 1em">
-                <button type="button" id="refresh" onclick="reloadData()" value="Refresh Data">Refresh Data</button>
+                <button class="refreshButton" style="margin-left: 5px" type="button" id="refresh"
+                    onclick=" redrawMainChart()" value="Refresh Data">Redraw Chart</button>
+                <P>
+                    <button class="bottombutton" type="button" id="toggleInfo" onclick="toggleInfo()"
+                        value="Toggle Info">Show Temps & Pressure</button>
+                    <button class="bottombutton" type="button" id="toggleDataTable" onclick="toggleDataTable()"
+                        value="Toggle Data Table">Show Data Table</button>
+                </P>
+                <button class="bottombutton" type="button" id="about" onclick="toggleAboutDiv()"
+                value="Toggle About">About</button>
+
             </div>
         </div>
-
-
-
     </div>
-    <div id='dataDiv'>
-        <table id='dataDisplay' style="border-collapse: collapse; width:auto">
-            <tr>
-                <th>Entry #</th>
-                <th>Local Time</th>
-                <th>Wind Direction</th>
-                <th>Wind Speed</th>
-                <th>2 Min Avg</th>
-                <th>Calculated Avg</th>
-                <th>Gust</th>
-                <th>Gust Avg</th>
-                <th>Air Temp</th>
-                <th>Water Temp</th>
-                <th>Pressure</th>
-            </tr>
-        </table>
-    </div>
+
 </body>
 <script>
+
+    // document.getElementById('windPlots').addEventListener('click', function (e) { showAlert(e.clientX) });
     document.getElementById("histDate").value = '2020-07-19';
     document.getElementById("histTime").value = '15:00';
-    showWindHist(75)
-    reloadData();
+    showWindHist(120)
+    collectData();
+
 </script>
 
 </html>
