@@ -16,7 +16,6 @@ Sailing and racing Lasers on Lake Mendota, I had been looking for a statisfactor
 
 &emsp;&emsp;[API Documentation](https://metobs-test.ssec.wisc.edu/api/data)
 
-
 ## Active Issues ##
 
 1. Rework CSS
@@ -31,6 +30,7 @@ Sailing and racing Lasers on Lake Mendota, I had been looking for a statisfactor
 3. Resolve/understand
    1. async-await with the promise ("fetch")
    2. the apparent day boundary issue with the hour 19:00-19:59
+4. Correct data table load when data is incomplete
 
 ## Developer Wish List ##
 
