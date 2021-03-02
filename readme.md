@@ -2,7 +2,7 @@
 
 ## Goals ##
 
-1. Display Mendota Buoy wind speed and direction viewable in phone browser
+1. Display Mendota Buoy wind speed and direction in phone browser
 2. Avoid using JavaScript libraries
 3. No JavaScript frameworks
 4. Develop with only "modern" browsers in mind
