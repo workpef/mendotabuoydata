@@ -7,6 +7,13 @@
 3. No JavaScript frameworks
 4. Develop with only "modern" browsers in mind
 
+## Data Source ##
+
+&emsp;&emsp;University of Wisconsin-Madison Space Science and Engineering Center - ( [SSEC](https://www.ssec.wisc.edu/) )
+
+&emsp;&emsp;[API Documentation](https://metobs-test.ssec.wisc.edu/api/data)
+
+
 ## Active Issues ##
 
 1. Rework CSS
