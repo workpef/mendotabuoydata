@@ -24,6 +24,7 @@
    5. bonus: redo HTML data table to CSS table
 2. Remove various log statements
 3. Remove unused properties on the ChartElement class
+4. Resolve async-await with the promise ("fetch")
 
 ## Developer Wish List ##
 
