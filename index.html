@@ -94,7 +94,7 @@
 
                 <label style="width: 40% ; margin-left: 15px ;" class='plotControls' for="windhist">History</label>
                 <input style="width: 50% ; margin-left: 5px ;" class='plotControls' type="range" min="10" max="240"
-                    step="1" value="120" id="windhist" oninput="showWindHist(value)">
+                    step="1" value="240" id="windhist" oninput="showWindHist(value)">
                 <output class='plotControls' for="windhist" id=windhistdisplay></output>
 
                 <button class="refreshButton" type="button" id="collectData" onclick="collectData()"
@@ -301,7 +301,7 @@
     let dt = new Date();
     document.getElementById("histDate").value = dt.toISOString().substring(0,10); //'2020-07-19';
     document.getElementById("histTime").value = dt.toLocaleTimeString('en-GB') ; //'15:00';
-    showWindHist(120)
+    showWindHist(240)
     collectData();
 
 </script>
