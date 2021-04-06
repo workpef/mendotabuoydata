@@ -129,15 +129,15 @@ function collectData() {
     let depth = document.querySelector('#windhistdisplay').value;
     let userDate = document.getElementById("histDate").value;
     let userTime = document.getElementById("histTime").value;
-    let endDate = new Date(new Date(userDate + ' ' + userTime).toUTCString());
-    let uppderBnd = new Date(endDate.toUTCString());
-    let lowerBnd = setWindHistDepth(uppderBnd, - Number(depth));
+    let endDate = new Date(userDate + ' ' + userTime) ;
+    let startDate =  new Date(endDate.getTime() - (Number(depth) * 60000));
+    
 
     let url =
         'https://metobs.ssec.wisc.edu/api/data.json?' +
         'symbols=' + Object.values(measures).filter(rec => rec.origin === MeasureOrigin.URL).reduce((str, rec) => str + rec.name + ':', '').slice(0, -1) +
-        '&begin=' + formatDateForURL(lowerBnd) +
-        '&end=' + formatDateForURL(uppderBnd) +
+        '&begin=' + startDate.toJSON().substring(0,19) + 
+        '&end=' + endDate.toJSON().substring(0,19) +
         '&order=column';
 
     console.log(url);
@@ -175,7 +175,10 @@ function collectData() {
             =================================================*/
             let ts = getDataStateRecordByName('timeStamp');
             ts.data = ssecData[ts.name];
-            getDataStateRecordByName('plotTimeStamp').data = ts.data.map(x => { let d = new Date(x.replace('T', ' ').replace('Z', '')); return d.toTimeString(Constants.TIME_FORMAT).substring(0, 5) });
+            getDataStateRecordByName('plotTimeStamp').data = ts.data.map(x => { 
+                         let d = new Date(x);
+                         return d.toTimeString(Constants.TIME_FORMAT).substring(0, 5) }
+                         );
 
             /* Generate averages from parent data
             ===========================================*/
@@ -278,7 +281,7 @@ function GetCanvasInfo(canvasId, numberOfWindPlots, offset) {
 /* Format the the date for the request
 =====================================================*/
 function formatDateForURL(date) {
-    return date.toISOString().substring(0, 10) + 'T' + date.toLocaleTimeString(Constants.TIME_FORMAT);
+    return date.toISOString().substring(0, 10) + 'T' + date.toUTCString(Constants.TIME_FORMAT);
 }
 
 /* Establish the request start date/time
